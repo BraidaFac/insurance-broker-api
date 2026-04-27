@@ -1,0 +1,208 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-04-27",
+  "__export_source": "insomnia.desktop.app",
+  "resources": [
+    {
+      "_id": "wrk_insurance_broker",
+      "_type": "workspace",
+      "name": "Insurance Broker API",
+      "description": "Assessment — FastAPI + pgvector + GPT-4o agent"
+    },
+    {
+      "_id": "env_base",
+      "_type": "environment",
+      "parentId": "wrk_insurance_broker",
+      "name": "Local",
+      "data": {
+        "base_url": "http://localhost:8000/api/v1",
+        "token": "PASTE_YOUR_TOKEN_HERE"
+      }
+    },
+    {
+      "_id": "fld_auth",
+      "_type": "request_group",
+      "parentId": "wrk_insurance_broker",
+      "name": "🔐 Auth"
+    },
+    {
+      "_id": "fld_policies",
+      "_type": "request_group",
+      "parentId": "wrk_insurance_broker",
+      "name": "📋 Policies"
+    },
+    {
+      "_id": "fld_clients",
+      "_type": "request_group",
+      "parentId": "wrk_insurance_broker",
+      "name": "👥 Clients"
+    },
+    {
+      "_id": "fld_quotes",
+      "_type": "request_group",
+      "parentId": "wrk_insurance_broker",
+      "name": "💬 Quotes"
+    },
+    {
+      "_id": "fld_agent",
+      "_type": "request_group",
+      "parentId": "wrk_insurance_broker",
+      "name": "🤖 Agent"
+    },
+
+    {
+      "_id": "req_login",
+      "_type": "request",
+      "parentId": "fld_auth",
+      "name": "Login — get token",
+      "method": "POST",
+      "url": "{{ _.base_url }}/login/access-token",
+      "description": "Login with superuser credentials. Copy the access_token and paste it into the environment variable 'token'.",
+      "body": {
+        "mimeType": "application/x-www-form-urlencoded",
+        "params": [
+          { "name": "username", "value": "admin@example.com" },
+          { "name": "password", "value": "changethis" }
+        ]
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/x-www-form-urlencoded" }
+      ]
+    },
+
+    {
+      "_id": "req_list_policies",
+      "_type": "request",
+      "parentId": "fld_policies",
+      "name": "List all policies",
+      "method": "GET",
+      "url": "{{ _.base_url }}/policies/",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{ _.token }}" }
+      ]
+    },
+    {
+      "_id": "req_reindex",
+      "_type": "request",
+      "parentId": "fld_policies",
+      "name": "Reindex — generate embeddings",
+      "method": "POST",
+      "url": "{{ _.base_url }}/policies/reindex",
+      "description": "Generates and stores vector embeddings for all 15 policies. Run this before semantic search.",
+      "body": { "mimeType": "application/json", "text": "" },
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{ _.token }}" },
+        { "name": "Content-Type", "value": "application/json" }
+      ]
+    },
+    {
+      "_id": "req_semantic_search",
+      "_type": "request",
+      "parentId": "fld_policies",
+      "name": "Semantic search",
+      "method": "GET",
+      "url": "{{ _.base_url }}/policies/search/semantic?q=coverage for a small café with food liability&k=3",
+      "description": "Natural language search using pgvector cosine distance. Change q= to try different queries.",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{ _.token }}" }
+      ],
+      "parameters": [
+        { "name": "q", "value": "coverage for a small café with food liability" },
+        { "name": "k", "value": "3" }
+      ]
+    },
+    {
+      "_id": "req_semantic_search_cyber",
+      "_type": "request",
+      "parentId": "fld_policies",
+      "name": "Semantic search — cyber / data breach",
+      "method": "GET",
+      "url": "{{ _.base_url }}/policies/search/semantic",
+      "description": "Example query for cyber coverage.",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{ _.token }}" }
+      ],
+      "parameters": [
+        { "name": "q", "value": "data breach and ransomware protection for a tech company" },
+        { "name": "k", "value": "3" }
+      ]
+    },
+
+    {
+      "_id": "req_list_clients",
+      "_type": "request",
+      "parentId": "fld_clients",
+      "name": "List all clients",
+      "method": "GET",
+      "url": "{{ _.base_url }}/clients/",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{ _.token }}" }
+      ]
+    },
+
+    {
+      "_id": "req_list_quotes",
+      "_type": "request",
+      "parentId": "fld_quotes",
+      "name": "List all quotes",
+      "method": "GET",
+      "url": "{{ _.base_url }}/quotes/",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{ _.token }}" }
+      ]
+    },
+
+    {
+      "_id": "req_agent_cafe",
+      "_type": "request",
+      "parentId": "fld_agent",
+      "name": "Ask agent — café recommendation",
+      "method": "POST",
+      "url": "{{ _.base_url }}/agent/ask",
+      "description": "The example from the task spec. GPT-4o will call search_policies_semantic and return a grounded recommendation.",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"question\": \"Which of our policies best suits a small Auckland café with NZ$200k annual turnover?\"\n}"
+      },
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{ _.token }}" },
+        { "name": "Content-Type", "value": "application/json" }
+      ]
+    },
+    {
+      "_id": "req_agent_cyber",
+      "_type": "request",
+      "parentId": "fld_agent",
+      "name": "Ask agent — tech startup cyber risk",
+      "method": "POST",
+      "url": "{{ _.base_url }}/agent/ask",
+      "description": "Another demo query to show the agent works across different industries.",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"question\": \"We have a SaaS startup storing customer financial data, around NZ$1.5M turnover. What coverage do we need for cyber risks and data breaches?\"\n}"
+      },
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{ _.token }}" },
+        { "name": "Content-Type", "value": "application/json" }
+      ]
+    },
+    {
+      "_id": "req_agent_engineering",
+      "_type": "request",
+      "parentId": "fld_agent",
+      "name": "Ask agent — engineering firm PI",
+      "method": "POST",
+      "url": "{{ _.base_url }}/agent/ask",
+      "description": "Third demo query for variety.",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"question\": \"I have an engineering consulting firm doing infrastructure projects. What professional indemnity coverage would you recommend?\"\n}"
+      },
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{ _.token }}" },
+        { "name": "Content-Type", "value": "application/json" }
+      ]
+    }
+  ]
+}
