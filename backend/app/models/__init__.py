@@ -1,0 +1,46 @@
+# Re-export everything so existing imports like `from app.models import User` keep working.
+from app.models.base import (  # noqa: F401
+    Item,
+    ItemCreate,
+    ItemPublic,
+    ItemsPublic,
+    ItemUpdate,
+    Message,
+    NewPassword,
+    Token,
+    TokenPayload,
+    UpdatePassword,
+    User,
+    UserCreate,
+    UserPublic,
+    UserRegister,
+    UsersPublic,
+    UserUpdate,
+    UserUpdateMe,
+    get_datetime_utc,
+)
+from app.models.insurance import (  # noqa: F401
+    AgentAsk,
+    AgentResponse,
+    Client,
+    ClientCreate,
+    ClientPublic,
+    ClientsPublic,
+    ClientUpdate,
+    PoliciesPublic,
+    Policy,
+    PolicyCreate,
+    PolicyPublic,
+    PolicySearchResult,
+    PolicyUpdate,
+    ProductType,
+    Quote,
+    QuoteCreate,
+    QuotePublic,
+    QuotesPublic,
+    QuoteStatus,
+    QuoteUpdate,
+)
+
+# Re-export SQLModel so alembic's env.py (`from app.models import SQLModel`) keeps working
+from sqlmodel import SQLModel  # noqa: F401
